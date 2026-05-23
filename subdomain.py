@@ -1,5 +1,13 @@
 import requests
 import threading
+from colorama import Fore,init
+
+init(autoreset=True)
+
+red = Fore.RED
+blue = Fore.BLUE
+green = Fore.GREEN
+reset = Fore.RESET
 
 result = []
 lock = threading.Lock()
@@ -7,18 +15,32 @@ lock = threading.Lock()
 def check_subdomain(target,sub):
     global result
     
-
-    url = f"http://{sub}.{target}"
-            
+    https_url = f"https://{sub}.{target}"
+    http_url = f"http://{sub}.{target}"
+    
     try:
-        r = requests.get(url, timeout=3)
-                
+
+        r = requests.get(https_url, timeout=3)
+
         if r.status_code < 400:
-            print(f"[+]Found {url} : {r.status_code}")
-            result.append(url)
+            print(f"{blue}[+] Found : " + f"{reset}{https_url} : " + f"{green}{r.status_code}")
+            result.append(https_url)
+
+            return
+
     except:
         pass
-    return result
+
+    try:
+
+        r = requests.get(http_url, timeout=3)
+
+        if r.status_code < 400:
+            print(f"{blue}[+] Found : " + f"{reset}{http_url} : " + f"{green}{r.status_code}")
+            result.append(http_url)
+
+    except:
+        pass
 
 def subdomain_find(target,subwordlist,max_threads):
     threads = []
@@ -32,7 +54,7 @@ def subdomain_find(target,subwordlist,max_threads):
                 while threading.active_count() > max_threads:
                     pass
                 
-                t = threading.Thread(target=check_subdomain,args=(target,sub))
+                t = threading.Thread(target=check_subdomain,args=(target,sub),daemon=True)
                 threads.append(t)
                 t.start()
                 
@@ -41,4 +63,4 @@ def subdomain_find(target,subwordlist,max_threads):
                 
         return result
     except FileNotFoundError:
-        print(f"[-] File not found: {subwordlist}")
+        print(f"{red}[-] File not found: {subwordlist}")

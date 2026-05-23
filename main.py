@@ -1,7 +1,15 @@
 import argparse
+from colorama import Fore,init
 from subdomain import subdomain_find
 from directory import directory_brute
 from portscan import port_scan
+
+init(autoreset=True)
+
+red = Fore.RED
+blue = Fore.BLUE
+green = Fore.GREEN
+
 
 def main():
     print("""
@@ -37,7 +45,7 @@ Modules:
         return
     
     if subwordlist:
-        print(f"\n[+] Subdomain scan:")
+        print(f"{green}\n[+] Subdomain scan:")
         subs = subdomain_find(target,subwordlist,threads)
         if output:
             with open(output,"a")as file:
@@ -47,7 +55,7 @@ Modules:
         
         
     if dirwordlist:
-        print(f"\n[+] Directory scan:")
+        print(f"{green}\n[+] Directory scan:")
         dirs = directory_brute(target,dirwordlist,threads)
         if output:
             with open(output,"a")as file:
@@ -56,7 +64,7 @@ Modules:
                     file.write(directory + "\n")
         
     if ports:
-        print(f"\n[+] Port scan:")
+        print(f"{green}\n[+] Port scan:")
         open_ports = port_scan(target,ports,threads)
         if output:
             with open(output,"a")as file:
@@ -69,4 +77,4 @@ if __name__ == "__main__":
         main()
 
     except KeyboardInterrupt:
-        print("\n[!] Program interrupted by user")
+        print(f"{red}\n[!] Program interrupted by user")
